@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace NVenter.Aggregate
+namespace NVenter.Domain
 {
     public class CommandHandler<TCommand, TAggregateRoot>
         where TCommand : ICommand

@@ -2,7 +2,7 @@ using NVenter.Core;
 using System;
 using Xunit;
 
-namespace NVenter.Aggregate.UnitTests
+namespace NVenter.Domain.UnitTests
 {
     public class AggregateRootTests
     {
@@ -10,7 +10,7 @@ namespace NVenter.Aggregate.UnitTests
         public void Test1()
         {
             var testAggregate = new AggregateRootStub();
-            AggregateRootInitializer.Initialize(this.GetType().Assembly);
+            AggregateRootInitializer.Initialize(GetType().Assembly);
             testAggregate.Apply(new TestEvent());
 
             Assert.Equal(1, testAggregate.TestEventApplyCalls);

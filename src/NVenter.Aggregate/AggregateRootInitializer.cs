@@ -6,13 +6,13 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
-namespace NVenter.Aggregate
+namespace NVenter.Domain
 {
     public static class AggregateRootInitializer
     {
         public static void Initialize(params Assembly[] assemblies)
         {
-            Func<MethodInfo, bool> isEventApplier = (MethodInfo mi) =>
+            Func<MethodInfo, bool> isEventApplier = (mi) =>
                 mi.GetParameters().Count() == 1 &&
                 typeof(IEvent).IsAssignableFrom(mi.GetParameters().Single().ParameterType);
 

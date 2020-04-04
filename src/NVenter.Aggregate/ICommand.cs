@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NVenter.Aggregate
+namespace NVenter.Domain
 {
     public interface ICommand
     {

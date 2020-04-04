@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace NVenter.Aggregate
+namespace NVenter.Domain
 {
     public interface IAggregateRootRepository<TAggregateRoot> where TAggregateRoot : AggregateRoot, new()
     {

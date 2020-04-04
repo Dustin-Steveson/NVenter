@@ -1,9 +1,9 @@
 ﻿using NVenter.Core;
 using System;
 using System.Collections.Generic;
-using static NVenter.Aggregate.AggregateRootInitializer;
+using static NVenter.Domain.AggregateRootInitializer;
 
-namespace NVenter.Aggregate
+namespace NVenter.Domain
 {
     public abstract class AggregateRoot
     {
@@ -24,7 +24,7 @@ namespace NVenter.Aggregate
 
         public void Apply(IEvent @event)
         {
-            if(EventMethods.ContainsKey(this.GetType()) && EventMethods[GetType()].ContainsKey(@event.GetType()))
+            if (EventMethods.ContainsKey(GetType()) && EventMethods[GetType()].ContainsKey(@event.GetType()))
             {
                 EventMethods[GetType()][@event.GetType()](this, @event);
             }

@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace NVenter.Aggregate.UnitTests
+namespace NVenter.Domain.UnitTests
 {
     public class AggregateRootRepositoryTests
     {

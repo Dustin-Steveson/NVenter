@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace NVenter.Aggregate
+namespace NVenter.Domain
 {
     public interface IDomainCommandHandler<TCommand, TAggregateRoot>
         where TCommand : ICommand
