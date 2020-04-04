@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NVenter.Aggregate\NVenter.Domain.csproj" />
+    <ProjectReference Include="..\NVenter.Domain\NVenter.Domain.csproj" />
   </ItemGroup>
 
 </Project>
