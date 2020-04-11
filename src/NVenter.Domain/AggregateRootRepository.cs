@@ -17,7 +17,7 @@ namespace NVenter.Domain
 
         public async Task<TAggregateRoot> Get(Guid aggregateId, bool shouldExist)
         {
-            var events = await _eventRepository.GetEvents<TAggregateRoot>(aggregateId);
+            var events = await _eventRepository.GetEvents<TAggregateRoot>(StreamName(aggregateId));
             var aggregate = new TAggregateRoot();
 
             if (shouldExist && events.Any() == false)
@@ -34,9 +34,14 @@ namespace NVenter.Domain
             return aggregate;
         }
 
-        public async Task Save(IEnumerable<EventWrapper> events, Guid id, uint expectedVersion)
+        public async Task Save(TAggregateRoot aggregateRoot)
         {
-            await _eventRepository.SaveEvents<TAggregateRoot>(events, expectedVersion);
+            await _eventRepository.SaveEvents<TAggregateRoot>(
+                StreamName(aggregateRoot.Id),
+                aggregateRoot.GetUncommittedChanges().Select(_ => new EventWrapper(_, new Metadata())),
+                aggregateRoot.Version);
         }
+
+        private string StreamName(Guid aggregateId) => $"{typeof(TAggregateRoot).Name}\\{aggregateId}";
     }
 }

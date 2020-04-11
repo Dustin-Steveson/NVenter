@@ -2,10 +2,5 @@
 
 namespace NVenter.Core
 {
-    public interface IEvent : IMessage
-    {
-
-    }
-
-    public interface IMessage { }
+    public interface IEvent : IMessage { }
 }

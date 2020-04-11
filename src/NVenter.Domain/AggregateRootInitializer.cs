@@ -8,19 +8,29 @@ using System.Text;
 
 namespace NVenter.Domain
 {
-    public static class AggregateRootInitializer
+    public class AggregateRootInitializer
     {
+        static AggregateRootInitializer()
+        {
+            _initializationLock = new object();
+        }
+        private static object _initializationLock;
         public static void Initialize(params Assembly[] assemblies)
         {
-            Func<MethodInfo, bool> isEventApplier = (mi) =>
-                mi.GetParameters().Count() == 1 &&
-                typeof(IEvent).IsAssignableFrom(mi.GetParameters().Single().ParameterType);
+            lock (_initializationLock)
+            {
+                if (AggregateRoot.EventMethods != null) return;
 
-            AggregateRoot.EventMethods = assemblies.SelectMany(ass => ass.GetTypes())
-                .Where(t => typeof(AggregateRoot).IsAssignableFrom(t))
-                .ToDictionary(t => t, t => GetEventApplicationMethods(t, isEventApplier));
+                Func<MethodInfo, bool> isEventApplier =
+                    (mi) =>
+                    mi.GetParameters().Count() == 1 &&
+                    typeof(IEvent).IsAssignableFrom(mi.GetParameters().Single().ParameterType);
+
+                AggregateRoot.EventMethods = assemblies.SelectMany(ass => ass.GetTypes())
+                    .Where(t => typeof(AggregateRoot).IsAssignableFrom(t))
+                    .ToDictionary(t => t, t => GetEventApplicationMethods(t, isEventApplier));
+            }
         }
-
 
         internal delegate void DynamicMethodDelegate(object target, IEvent argument);
 

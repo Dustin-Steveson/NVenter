@@ -12,11 +12,11 @@ namespace NVenter.Projections
     public class EventProjector
     {
         private readonly IEventStream _eventStream;
-        private readonly Func<Type, IEventHandler> _handlerResolver;
-        private readonly Func<IEnumerable<IEventHandler>> _allHandlersResolver;
+        private readonly Func<Type, IHandleMessages> _handlerResolver;
+        private readonly Func<IEnumerable<IHandleMessages>> _allHandlersResolver;
         private readonly IDictionary<Type, Func<EventWrapper, Task>> _processEventDelegateCache;
 
-        public EventProjector(IEventStream eventStream, Func<Type, IEventHandler> handlerResolver, Func<IEnumerable<IEventHandler>> allHandlersResolver)
+        public EventProjector(IEventStream eventStream, Func<Type, IHandleMessages> handlerResolver, Func<IEnumerable<IHandleMessages>> allHandlersResolver)
         {
             _eventStream = eventStream;
             _handlerResolver = handlerResolver;
@@ -72,8 +72,9 @@ namespace NVenter.Projections
 
         private async Task ProcessEvent<TEvent>(EventWrapper @event) where TEvent : IEvent
         {
-            var handler = _handlerResolver(typeof(IEventHandler<TEvent>)) as IEventHandler<TEvent>;
-            await handler.Handle(@event as EventWrapper<TEvent>);
+            var handler = _handlerResolver(typeof(IHandleMessages<TEvent>)) as IHandleMessages<TEvent>;
+            var eventWrapper = @event as EventWrapper<TEvent>;
+            await handler.Handle(eventWrapper.Event, new MessageContext(eventWrapper.Metadata.Id, eventWrapper.Metadata.CausationId, eventWrapper.Metadata.CorrelationId, eventWrapper.Metadata.Created));
         }
     }
 }

@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
-
-namespace NVenter.Domain
+﻿namespace NVenter.Domain
 {
 
     public interface IAggregateCreationCommand : ICommand { }
