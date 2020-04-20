@@ -9,16 +9,28 @@ using System.Threading.Tasks;
 
 namespace NVenter.Projections
 {
-    public class EventProjector
+    public class EventProjector<TEventStreamConfiguration>
     {
-        private readonly IEventStream _eventStream;
+        private readonly string _streamName;
+        private readonly IEventStream<TEventStreamConfiguration> _eventStream;
+        private readonly TEventStreamConfiguration _configuration;
+        private readonly IGetProjectionPosition _projectionPositionGetter;
         private readonly Func<Type, IHandleMessages> _handlerResolver;
         private readonly Func<IEnumerable<IHandleMessages>> _allHandlersResolver;
         private readonly IDictionary<Type, Func<EventWrapper, Task>> _processEventDelegateCache;
 
-        public EventProjector(IEventStream eventStream, Func<Type, IHandleMessages> handlerResolver, Func<IEnumerable<IHandleMessages>> allHandlersResolver)
+        public EventProjector(
+            string streamName,
+            IEventStream<TEventStreamConfiguration> eventStream,
+            TEventStreamConfiguration configuration,
+            IGetProjectionPosition projectionPositionGetter,
+            Func<Type, IHandleMessages> handlerResolver,
+            Func<IEnumerable<IHandleMessages>> allHandlersResolver)
         {
+            _streamName = streamName;
             _eventStream = eventStream;
+            _configuration = configuration;
+            _projectionPositionGetter = projectionPositionGetter;
             _handlerResolver = handlerResolver;
             _allHandlersResolver = allHandlersResolver;
             _processEventDelegateCache = new Dictionary<Type, Func<EventWrapper, Task>>();
@@ -35,24 +47,27 @@ namespace NVenter.Projections
                 _processEventDelegateCache.Add(type, GetProcessEventDelegate(type));
             }
 
-            await _eventStream.Start(types);
+            var position = _projectionPositionGetter.GetProjectionPosition();
+
             while (cancellationToken.IsCancellationRequested == false)
             {
-                var eventWrappers = await _eventStream.GetEvents();
+                var eventStreamSlice = await _eventStream.GetEvents(_configuration, position);
 
-                foreach (var eventWrapper in eventWrappers)
+                foreach (var eventWrapper in eventStreamSlice.Events)
                 {
                     if (_processEventDelegateCache.ContainsKey(eventWrapper.Event.GetType()) == false) continue;
 
                     await _processEventDelegateCache[eventWrapper.Event.GetType()](eventWrapper);
                 }
+
+                position = eventStreamSlice.LastPosition;
             }
         }
 
         private Func<EventWrapper, Task> GetProcessEventDelegate(Type type)
         {
             var methodInfo = GetType()
-                .GetMethod(nameof(EventProjector.ProcessEvent), BindingFlags.Instance | BindingFlags.NonPublic)
+                .GetMethod(nameof(EventProjector<object>.ProcessEvent), BindingFlags.Instance | BindingFlags.NonPublic)
                 .MakeGenericMethod(type);
 
             var instanceParameter = Expression.Constant(this);

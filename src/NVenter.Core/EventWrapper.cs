@@ -2,7 +2,7 @@
 {
     public class EventWrapper<TEvent> : EventWrapper where TEvent : IEvent
     {
-        public EventWrapper(TEvent @event, Metadata metadata) : base(@event, metadata) { }
+        public EventWrapper(TEvent @event, Metadata metadata, ulong position) : base(@event, metadata) { }
         public new TEvent Event { get; }
     }
 
