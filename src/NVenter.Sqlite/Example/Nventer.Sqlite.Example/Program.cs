@@ -25,15 +25,11 @@ WHERE StreamName = @StreamName
 ORDER BY StreamPosition";
 
             await connectionFactory.NewConnection().QueryAsync<int>("select count(*) from event");
-
-            IEventStream<IAggregateRootEventStreamParameters<ShoppingCart>> x = 
+            var repository = new AggregateRootRepository<AggregateRootStreamSqlParameters<ShoppingCart>, ShoppingCart>(
                 new AggregateRootEventStream<AggregateRootStreamSqlParameters<ShoppingCart>, ShoppingCart>(
                     new ReadForwardEventStreamSettings { Sql = sql },
-                    connectionFactory);
-
-            var repository = new AggregateRootRepository<ShoppingCart>(
-                x,
-                new AggregateRootEventStreamSqlParametersFactory(),
+                    connectionFactory),
+                new AggregateRootEventStreamSqlParametersFactory<ShoppingCart>(),
                 new EventWriter(connectionFactory),
                 new DefaultAggregateRootStreamNameBuilder());
 

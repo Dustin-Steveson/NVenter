@@ -2,8 +2,8 @@
 
 namespace NVenter.Domain
 {
-    public interface IAggregateRootEventStreamParametersFactory
+    public interface IAggregateRootEventStreamParametersFactory<TStreamParams, TAggregateRoot> where TStreamParams : IAggregateRootEventStreamParameters<TAggregateRoot>  where TAggregateRoot : AggregateRoot, new() 
     {
-        IAggregateRootEventStreamParameters<TAggregateRoot> GetParameters<TAggregateRoot>(Guid aggregateId) where TAggregateRoot : AggregateRoot, new();
+        TStreamParams GetParameters(Guid aggregateId);
     }
 }

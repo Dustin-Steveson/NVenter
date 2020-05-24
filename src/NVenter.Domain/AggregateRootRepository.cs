@@ -5,16 +5,16 @@ using System.Threading.Tasks;
 
 namespace NVenter.Domain {
 
-    public class AggregateRootRepository<TAggregateRoot> : IAggregateRootRepository<TAggregateRoot> where TAggregateRoot : AggregateRoot, new()
+    public class AggregateRootRepository<TStreamParams, TAggregateRoot> : IAggregateRootRepository<TAggregateRoot> where TStreamParams : IAggregateRootEventStreamParameters<TAggregateRoot> where TAggregateRoot : AggregateRoot, new()
     {
-        private readonly IEventStream<IAggregateRootEventStreamParameters<TAggregateRoot>> _eventStream;
-        private readonly IAggregateRootEventStreamParametersFactory _eventStreamParametersFactory;
+        private readonly IEventStream<TStreamParams> _eventStream;
+        private readonly IAggregateRootEventStreamParametersFactory<TStreamParams, TAggregateRoot> _eventStreamParametersFactory;
         private readonly IEventWriter _eventWriter;
         private readonly IBuildAggregateStreamNames _aggregateRootNameBuilder;
 
         public AggregateRootRepository(
-            IEventStream<IAggregateRootEventStreamParameters<TAggregateRoot>> eventStream,
-            IAggregateRootEventStreamParametersFactory eventStreamParametersFactory,
+            IEventStream<TStreamParams> eventStream,
+            IAggregateRootEventStreamParametersFactory<TStreamParams, TAggregateRoot> eventStreamParametersFactory,
             IEventWriter eventWriter,
             IBuildAggregateStreamNames aggregateRootNameBuilder)
         {
@@ -26,7 +26,8 @@ namespace NVenter.Domain {
 
         public async Task<TAggregateRoot> Get(Guid aggregateId, bool shouldExist)
         {
-            var eventStreamSlice = await _eventStream.GetEvents(_eventStreamParametersFactory.GetParameters<TAggregateRoot>(aggregateId));
+            
+            var eventStreamSlice = await _eventStream.GetEvents(_eventStreamParametersFactory.GetParameters(aggregateId));
 
             if (shouldExist && eventStreamSlice.Events.Any() == false)
                 throw new InvalidOperationException($"No events found when attempting to hydrate aggregate with id: {aggregateId}");
