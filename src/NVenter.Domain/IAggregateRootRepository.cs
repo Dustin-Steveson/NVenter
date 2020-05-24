@@ -7,7 +7,7 @@ namespace NVenter.Domain
 {
     public interface IAggregateRootRepository<TAggregateRoot> where TAggregateRoot : AggregateRoot, new()
     {
-        Task Save(TAggregateRoot aggregateRoot);
+        Task Save(TAggregateRoot aggregateRoot, MessageContext context);
         Task<TAggregateRoot> Get(Guid aggregateId, bool shouldExist);
     }
 }

@@ -3,28 +3,30 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace NVenter.Domain
-{
+namespace NVenter.Domain {
 
     public class AggregateRootRepository<TAggregateRoot> : IAggregateRootRepository<TAggregateRoot> where TAggregateRoot : AggregateRoot, new()
     {
-        private readonly IEventStream<IAggregateRootEventStreamConfiguration<TAggregateRoot>> _eventStream;
-        private readonly IAggregateRootEventStreamConfigurationFactory _eventStreamConfigurationFactory;
+        private readonly IEventStream<IAggregateRootEventStreamParameters<TAggregateRoot>> _eventStream;
+        private readonly IAggregateRootEventStreamParametersFactory _eventStreamParametersFactory;
         private readonly IEventWriter _eventWriter;
+        private readonly IBuildAggregateStreamNames _aggregateRootNameBuilder;
 
-        public AggregateRootRepository(IEventStream<
-            IAggregateRootEventStreamConfiguration<TAggregateRoot>> eventStream,
-            IAggregateRootEventStreamConfigurationFactory eventStreamConfigurationFactory,
-            IEventWriter eventWriter)
+        public AggregateRootRepository(
+            IEventStream<IAggregateRootEventStreamParameters<TAggregateRoot>> eventStream,
+            IAggregateRootEventStreamParametersFactory eventStreamParametersFactory,
+            IEventWriter eventWriter,
+            IBuildAggregateStreamNames aggregateRootNameBuilder)
         {
             _eventStream = eventStream;
-            _eventStreamConfigurationFactory = eventStreamConfigurationFactory;
+            _eventStreamParametersFactory = eventStreamParametersFactory;
             _eventWriter = eventWriter;
+            _aggregateRootNameBuilder = aggregateRootNameBuilder;
         }
 
         public async Task<TAggregateRoot> Get(Guid aggregateId, bool shouldExist)
         {
-            var eventStreamSlice = await _eventStream.GetEvents(_eventStreamConfigurationFactory.GetConfiguration<TAggregateRoot>(aggregateId), 0);
+            var eventStreamSlice = await _eventStream.GetEvents(_eventStreamParametersFactory.GetParameters<TAggregateRoot>(aggregateId));
 
             if (shouldExist && eventStreamSlice.Events.Any() == false)
                 throw new InvalidOperationException($"No events found when attempting to hydrate aggregate with id: {aggregateId}");
@@ -42,11 +44,17 @@ namespace NVenter.Domain
             return aggregate;
         }
 
-        public async Task Save(TAggregateRoot aggregateRoot)
+        public async Task Save(TAggregateRoot aggregateRoot, MessageContext messageContext)
         {
             await _eventWriter.SaveEvents(
-                typeof(TAggregateRoot).Name,
-                aggregateRoot.GetUncommittedChanges().Select(_ => new EventWrapper(_, new Metadata())),
+                _aggregateRootNameBuilder.GetStreamName(aggregateRoot),
+                aggregateRoot.GetUncommittedChanges().Select(_ => new EventWrapper(_, 
+                new Metadata { 
+                    Id = messageContext.Id, 
+                    CausationId = messageContext.CausationId,
+                    CorrelationId = messageContext.CoorelationId,
+                    Created = messageContext.Created
+                })),
                 aggregateRoot.Version);
         }
     }

@@ -19,7 +19,7 @@ namespace NVenter.Core
         {
             var state = await _stateRepository.Get(message);
             var newState = await _handler.Handle(message, state, context);
-            await _stateRepository.Save(newState);
+            await _stateRepository.Save(newState, context);
         }
     }
 
@@ -40,6 +40,6 @@ namespace NVenter.Core
     public interface IMessageStateRepository<TMessage, TState> where TMessage : IMessage
     {
         Task<TState> Get(TMessage message);
-        Task Save(TState state);
+        Task Save(TState state, MessageContext context);
     }
 }

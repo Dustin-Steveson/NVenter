@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\NVenter.Core\NVenter.Core.csproj" />
+    <ProjectReference Include="..\..\NVenter.Domain\NVenter.Domain.csproj" />
+    <ProjectReference Include="..\NVenter.Sqlite.Core\NVenter.Sqlite.Core.csproj" />
+  </ItemGroup>
+
+</Project>

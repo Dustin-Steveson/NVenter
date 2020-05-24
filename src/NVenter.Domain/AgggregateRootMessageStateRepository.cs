@@ -20,9 +20,9 @@ namespace NVenter.Domain
             return _repository.Get(message.AggregateId, message is IAggregateCreationCommand == false);
         }
 
-        public Task Save(TAggregateRoot state)
+        public Task Save(TAggregateRoot state, MessageContext context)
         {
-            return _repository.Save(state);
+            return _repository.Save(state, context);
         }
     }
 }

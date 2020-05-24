@@ -15,7 +15,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EventStore", "EventStore", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NVenter.Core.EventStore", "NVenter.EventStore\NVenter.Core.EventStore\NVenter.Core.EventStore.csproj", "{5A38A943-2D8D-4170-B2FF-BC84EB6BDD41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NVenter.EventStore.Domain", "NVenter.EventStore\NVenter.EventStore.Domain\NVenter.EventStore.Domain.csproj", "{0D312651-7872-4D2B-95F7-F2462167EA2D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NVenter.EventStore.Domain", "NVenter.EventStore\NVenter.EventStore.Domain\NVenter.EventStore.Domain.csproj", "{0D312651-7872-4D2B-95F7-F2462167EA2D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sqlite", "Sqlite", "{A16D4847-284C-438F-95BC-3D8DC62D6742}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NVenter.Sqlite.Core", "NVenter.Sqlite\NVenter.Sqlite.Core\NVenter.Sqlite.Core.csproj", "{C5AE8438-9D11-4D4B-AF4B-023D75223CC6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Example", "Example", "{5453BDE1-8FDF-42BF-B892-AEE68EC7970F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nventer.Sqlite.Example", "NVenter.Sqlite\Example\Nventer.Sqlite.Example\Nventer.Sqlite.Example.csproj", "{D5F5B0F6-8BC1-468D-A8F0-2AAE80D947ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NVenter.Sqlite.Domain", "NVenter.Sqlite\NVenter.Sqlite.Domain\NVenter.Sqlite.Domain.csproj", "{E5CDB231-4030-40D8-8E2E-504621D172A9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +57,18 @@ Global
 		{0D312651-7872-4D2B-95F7-F2462167EA2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D312651-7872-4D2B-95F7-F2462167EA2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D312651-7872-4D2B-95F7-F2462167EA2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5AE8438-9D11-4D4B-AF4B-023D75223CC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5AE8438-9D11-4D4B-AF4B-023D75223CC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5AE8438-9D11-4D4B-AF4B-023D75223CC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5AE8438-9D11-4D4B-AF4B-023D75223CC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5F5B0F6-8BC1-468D-A8F0-2AAE80D947ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5F5B0F6-8BC1-468D-A8F0-2AAE80D947ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5F5B0F6-8BC1-468D-A8F0-2AAE80D947ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5F5B0F6-8BC1-468D-A8F0-2AAE80D947ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5CDB231-4030-40D8-8E2E-504621D172A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5CDB231-4030-40D8-8E2E-504621D172A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5CDB231-4030-40D8-8E2E-504621D172A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5CDB231-4030-40D8-8E2E-504621D172A9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -54,6 +76,10 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{5A38A943-2D8D-4170-B2FF-BC84EB6BDD41} = {8ED728C9-D372-44E7-ADA0-C36E8D17DF81}
 		{0D312651-7872-4D2B-95F7-F2462167EA2D} = {8ED728C9-D372-44E7-ADA0-C36E8D17DF81}
+		{C5AE8438-9D11-4D4B-AF4B-023D75223CC6} = {A16D4847-284C-438F-95BC-3D8DC62D6742}
+		{5453BDE1-8FDF-42BF-B892-AEE68EC7970F} = {A16D4847-284C-438F-95BC-3D8DC62D6742}
+		{D5F5B0F6-8BC1-468D-A8F0-2AAE80D947ED} = {5453BDE1-8FDF-42BF-B892-AEE68EC7970F}
+		{E5CDB231-4030-40D8-8E2E-504621D172A9} = {A16D4847-284C-438F-95BC-3D8DC62D6742}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {378A2DE0-0606-48B0-B4F5-7D9E910CA7B1}

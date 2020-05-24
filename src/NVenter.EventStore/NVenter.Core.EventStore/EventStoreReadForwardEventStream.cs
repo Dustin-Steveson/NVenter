@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 
 namespace NVenter.Core.EventStore
 {
-    public class EventStoreReadForwardEventStream<TStreamConfiguration> : IEventStream<TStreamConfiguration>
-        where TStreamConfiguration : IEventStoreEventStreamConfiguration
+    public class EventStoreReadForwardEventStream<TStreamParameters> : IEventStream<TStreamParameters>
+        where TStreamParameters : IEventStoreEventStreamParameters
     {
         private readonly EventStoreReadForwardEventStreamSettings _settings;
 
@@ -18,13 +18,13 @@ namespace NVenter.Core.EventStore
             _settings = settings;
         }
 
-        public async Task<EventStreamSlice> GetEvents(TStreamConfiguration configuration, long position)
+        public async Task<EventStreamSlice> GetEvents(TStreamParameters parameters)
         {
-            var settings = ConnectionSettings.Create();
-            settings.SetDefaultUserCredentials(new UserCredentials(_settings.UserName, _settings.Password));
-            using (var conn = EventStoreConnection.Create(settings, new IPEndPoint(IPAddress.Loopback, 1113)))
+            var eventStoreSettings = ConnectionSettings.Create();
+            eventStoreSettings.SetDefaultUserCredentials(new UserCredentials(_settings.UserName, _settings.Password));
+            using (var conn = EventStoreConnection.Create(eventStoreSettings, new IPEndPoint(IPAddress.Loopback, 1113)))
             {
-                var streamSlice = await conn.ReadStreamEventsForwardAsync(configuration.StreamName, position, _settings.NumberOfEventsPerFetch, true);
+                var streamSlice = await conn.ReadStreamEventsForwardAsync(_settings.StreamName, parameters.Position, _settings.NumberOfEventsPerFetch, true);
                 var events =
                     streamSlice
                     .Events
@@ -41,12 +41,12 @@ namespace NVenter.Core.EventStore
         }
     }
 
-    public class EventStoreReadForwardEventStream : IEventStoreEventStreamConfiguration
+    public class EventStoreReadForwardEventStream : IEventStoreEventStreamParameters
     {
-        public EventStoreReadForwardEventStream(string streamName)
+        public EventStoreReadForwardEventStream(long position)
         {
-            StreamName = streamName;
+            Position = position;
         }
-        public string StreamName { get; }
+        public long Position { get; }
     }
 }

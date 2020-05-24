@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace NVenter.Projections
 {
-    public class EventProjector<TEventStreamConfiguration>
+    public class EventProjector<TEventStreamParameters>
     {
         private readonly string _streamName;
-        private readonly IEventStream<TEventStreamConfiguration> _eventStream;
-        private readonly TEventStreamConfiguration _configuration;
+        private readonly IEventStream<TEventStreamParameters> _eventStream;
+        private readonly TEventStreamParameters _parameters;
         private readonly IGetProjectionPosition _projectionPositionGetter;
         private readonly Func<Type, IHandleMessages> _handlerResolver;
         private readonly Func<IEnumerable<IHandleMessages>> _allHandlersResolver;
@@ -21,15 +21,15 @@ namespace NVenter.Projections
 
         public EventProjector(
             string streamName,
-            IEventStream<TEventStreamConfiguration> eventStream,
-            TEventStreamConfiguration configuration,
+            IEventStream<TEventStreamParameters> eventStream,
+            TEventStreamParameters parameters,
             IGetProjectionPosition projectionPositionGetter,
             Func<Type, IHandleMessages> handlerResolver,
             Func<IEnumerable<IHandleMessages>> allHandlersResolver)
         {
             _streamName = streamName;
             _eventStream = eventStream;
-            _configuration = configuration;
+            _parameters = parameters;
             _projectionPositionGetter = projectionPositionGetter;
             _handlerResolver = handlerResolver;
             _allHandlersResolver = allHandlersResolver;
@@ -51,7 +51,7 @@ namespace NVenter.Projections
 
             while (cancellationToken.IsCancellationRequested == false)
             {
-                var eventStreamSlice = await _eventStream.GetEvents(_configuration, position);
+                var eventStreamSlice = await _eventStream.GetEvents(_parameters);
 
                 foreach (var eventWrapper in eventStreamSlice.Events)
                 {

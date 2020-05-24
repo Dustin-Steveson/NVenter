@@ -8,7 +8,10 @@ namespace NVenter.Domain
     public abstract class AggregateRoot
     {
         internal static IDictionary<Type, IDictionary<Type, DynamicMethodDelegate>> EventMethods;
-        public List<IEvent> _uncommitedEvents;
+        private List<IEvent> _uncommitedEvents;
+        protected void AddEvents(params IEvent[] events) {
+            _uncommitedEvents.AddRange(events);
+        }
         public Guid Id { get; protected set; }
         public AggregateRoot()
         {

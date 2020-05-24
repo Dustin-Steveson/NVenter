@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 
 namespace NVenter.Core
 {
-    public interface IEventStream<TStreamConfiguration>
+    public interface IEventStream<TStreamParameters>
     {
-        Task<EventStreamSlice> GetEvents(TStreamConfiguration configuration, long position);
+        Task<EventStreamSlice> GetEvents(TStreamParameters parameters);
     }
 }
