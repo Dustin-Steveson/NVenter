@@ -33,6 +33,6 @@ namespace NVenter.Domain
             }
         }
 
-        public uint Version { get; internal set; }
+        public int Version { get; internal set; }
     }
 }

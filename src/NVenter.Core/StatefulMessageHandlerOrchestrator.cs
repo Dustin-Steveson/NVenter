@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace NVenter.Core
-{
+namespace NVenter.Core {
     public class StatefulMessageHandlerOrchestrator<TMessage, TState>
         : IHandleMessages<TMessage>
         where TMessage : IMessage
@@ -21,25 +20,5 @@ namespace NVenter.Core
             var newState = await _handler.Handle(message, state, context);
             await _stateRepository.Save(newState, context);
         }
-    }
-
-    public interface IStatefulMessageHandler<TMessage, TState>
-    {
-        Task<TState> Handle(TMessage message, TState state, MessageContext context);
-    }
-
-    public interface IHandleMessages<TMessage> 
-        : IHandleMessages
-        where TMessage : IMessage
-    {
-        Task Handle(TMessage message, MessageContext context);
-    }
-
-    public interface IHandleMessages { }
-
-    public interface IMessageStateRepository<TMessage, TState> where TMessage : IMessage
-    {
-        Task<TState> Get(TMessage message);
-        Task Save(TState state, MessageContext context);
     }
 }

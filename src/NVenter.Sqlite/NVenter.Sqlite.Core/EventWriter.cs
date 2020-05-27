@@ -14,13 +14,12 @@ namespace NVenter.Sqlite.Core {
             _connectionFactory = connectionFactory;
         }
 
-        public async Task SaveEvents(string streamName, IEnumerable<EventWrapper> events, uint expectedVersion) {
+        public async Task SaveEvents(string streamName, IEnumerable<EventWrapper> events) {
             using (var connection = _connectionFactory.NewConnection()) {
                 await connection.OpenAsync();
                 using (var transaction = connection.BeginTransaction()) {
-                    foreach (var @event in events.Select(_ => _.GetStoredEvent(streamName))) {
+                    foreach (var @event in events.Select(_ => _.GetStoredEvent(streamName)).ToList()) {
                         await connection.InsertAsync(@event);
-                        transaction.Commit();
                     }
                 }
             }

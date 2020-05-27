@@ -12,7 +12,7 @@ namespace NVenter.Sqlite.Core {
         public DateTime Created { get; set; }
         public string EventType { get; set; }
         public string EventId { get; set; }
-        public string StreamId { get; set; }
+        public string StreamName { get; set; }
     }
 
     public static class EventWrapperExtensions {
@@ -29,7 +29,13 @@ namespace NVenter.Sqlite.Core {
             var metaData = JsonConvert.SerializeObject(eventWrapper.Metadata);
 
             return new StoredEvent {
-                        
+                StreamName = streamName,
+                EventType = eventWrapper.Event.GetType().Name,
+                Created = eventWrapper.Metadata.Created.UtcDateTime,
+                Data = @event,
+                MetaData = metaData,
+                EventId = eventWrapper.Metadata.Id.ToString(),
+                StreamPosition = eventWrapper.Metadata.StreamPosition
             };
         }
     }

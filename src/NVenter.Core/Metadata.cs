@@ -8,5 +8,6 @@ namespace NVenter.Core
         public Guid CorrelationId { get; set; }
         public Guid CausationId { get; set; }
         public DateTimeOffset Created { get; set; }
+        public int StreamPosition { get; set; }
     }
 }

@@ -1,20 +1,15 @@
 ﻿using NVenter.Domain;
 using System;
+using System.Collections.Generic;
 
 namespace NVenter.Sqlite.Domain {
-    public class AggregateRootEventStreamSqlParametersFactory<TAggregateRoot> : IAggregateRootEventStreamParametersFactory<AggregateRootStreamSqlParameters<TAggregateRoot>, TAggregateRoot> where TAggregateRoot : AggregateRoot, new() {
-
-        // public IAggregateRootEventStreamParameters<TAggregateRoot> GetParameters<TAggregateRoot>(Guid aggregateId) where TAggregateRoot : AggregateRoot, new() {
-        //     return new AggregateRootStreamSqlParameters<TAggregateRoot>(aggregateId);
-        // }
+    public class AggregateRootEventStreamSqlParametersFactory<TAggregateRoot> 
+        : IAggregateRootEventStreamParametersFactory<IDictionary<string, object>, TAggregateRoot>
+        where TAggregateRoot : AggregateRoot, new() {
 
 
-        public AggregateRootStreamSqlParameters<TAggregateRoot> GetParameters(Guid aggregateId) {
-            return new AggregateRootStreamSqlParameters<TAggregateRoot>(aggregateId);
+        public IDictionary<string, object> GetParameters(Guid aggregateId) {
+            return new Dictionary<string, object> { ["StreamName"] = $"{typeof(TAggregateRoot).Name}-{aggregateId}" };
         }
     }
-//@"SELECT * 
-//FROM EVENTS 
-//WHERE StreamName = @StreamName
-//ORDER BY StreamPosition";
 }

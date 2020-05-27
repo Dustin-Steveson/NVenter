@@ -1,11 +1,13 @@
 ﻿using NVenter.Core;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace NVenter.Domain {
 
-    public class AggregateRootRepository<TStreamParams, TAggregateRoot> : IAggregateRootRepository<TAggregateRoot> where TStreamParams : IAggregateRootEventStreamParameters<TAggregateRoot> where TAggregateRoot : AggregateRoot, new()
+    public class AggregateRootRepository<TStreamParams, TAggregateRoot> : IAggregateRootRepository<TAggregateRoot> where TStreamParams : IDictionary<string, object> where TAggregateRoot : AggregateRoot, new()
     {
         private readonly IEventStream<TStreamParams> _eventStream;
         private readonly IAggregateRootEventStreamParametersFactory<TStreamParams, TAggregateRoot> _eventStreamParametersFactory;
@@ -49,14 +51,14 @@ namespace NVenter.Domain {
         {
             await _eventWriter.SaveEvents(
                 _aggregateRootNameBuilder.GetStreamName(aggregateRoot),
-                aggregateRoot.GetUncommittedChanges().Select(_ => new EventWrapper(_, 
-                new Metadata { 
-                    Id = messageContext.Id, 
+                aggregateRoot.GetUncommittedChanges().Select((_, i) => new EventWrapper(_,
+                new Metadata {
+                    Id = messageContext.Id,
                     CausationId = messageContext.CausationId,
                     CorrelationId = messageContext.CoorelationId,
-                    Created = messageContext.Created
-                })),
-                aggregateRoot.Version);
+                    Created = messageContext.Created,
+                    StreamPosition = aggregateRoot.Version + i
+                })));
         }
     }
 }

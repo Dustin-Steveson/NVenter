@@ -17,16 +17,17 @@ namespace NVenter.Sqlite.Core {
             var createTableSql =
     @"CREATE TABLE event(
         Id TEXT NOT NULL,
-        StreamId TEXT NOT NULL,
+        StreamName TEXT NOT NULL,
+        EventType TEXT NOT NULL,
         GlobalPosition INTEGER PRIMARY KEY AUTOINCREMENT,
         StreamPosition INTEGER,
         Data TEXT NOT NULL,
         MetaData TEXT NOT NULL,
         Created DATETIME NOT NULL,
 
-        UNIQUE(StreamId, StreamPosition));
-
-    CREATE INDEX idx_AggregateId ON event(StreamId);";
+        UNIQUE(StreamName, StreamPosition));
+    CREATE INDEX idx_EventType ON event(StreamName);
+    CREATE INDEX idx_StreamName ON event(StreamName);";
 
             using (var connection = _factory.NewConnection()) {
                 connection.Open();
