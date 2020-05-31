@@ -25,12 +25,4 @@ namespace NVenter.Sqlite.Core {
             }
         }
     }
-
-    public class StreamNameEventStreamParameters {
-        public StreamNameEventStreamParameters(string streamName) {
-            StreamName = streamName;
-        }
-
-        public string StreamName { get; }
-    }
 }

@@ -1,12 +1,8 @@
 ﻿using Dapper;
-using Newtonsoft.Json.Bson;
 using NVenter.Core;
 using NVenter.Domain;
 using NVenter.Sqlite.Core;
-using NVenter.Sqlite.Domain;
 using System;
-using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace Nventer.Sqlite.Example {
@@ -19,19 +15,10 @@ namespace Nventer.Sqlite.Example {
 
             //var initializer = new DatabaseInitializer(connectionFactory);
             //await initializer.InitializeDatabase();
-
-            var sql = @"
-SELECT * 
-FROM event 
-WHERE StreamName = @StreamName
-ORDER BY StreamPosition";
-
             await connectionFactory.NewConnection().QueryAsync<int>("select count(*) from event");
-            var repository = new AggregateRootRepository<IDictionary<string, object>, ShoppingCart>(
-                new AggregateRootEventStream<ShoppingCart>(
-                    new ReadForwardEventStreamSettings { Sql = sql },
-                    connectionFactory),
-                new AggregateRootEventStreamSqlParametersFactory<ShoppingCart>(),
+            var streamFactory = new StreamFactory(new ReadForwardEventStreamSettings(), connectionFactory);
+            var repository = new AggregateRootRepository<ShoppingCart>(
+                streamFactory,
                 new EventWriter(connectionFactory),
                 new DefaultAggregateRootStreamNameBuilder());
 

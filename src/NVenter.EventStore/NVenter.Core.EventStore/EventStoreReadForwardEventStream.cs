@@ -9,26 +9,25 @@ using System.Threading.Tasks;
 
 namespace NVenter.Core.EventStore
 {
-    public class EventStoreReadForwardEventStream<TStreamParameters> : IEventStream<TStreamParameters>
-        where TStreamParameters : IEventStoreEventStreamParameters
-    {
+    public class EventStoreReadForwardEventStream : IEventStream {
         private readonly EventStoreReadForwardEventStreamSettings _settings;
+        private readonly long _position;
 
-        public EventStoreReadForwardEventStream(EventStoreReadForwardEventStreamSettings settings) {
+        public EventStoreReadForwardEventStream(EventStoreReadForwardEventStreamSettings settings, long position) {
             _settings = settings;
+            _position = position;
         }
 
-        public async Task<EventStreamSlice> GetEvents(TStreamParameters parameters)
-        {
+        public async Task<EventStreamSlice> GetEvents() {
             var eventStoreSettings = ConnectionSettings.Create();
             eventStoreSettings.SetDefaultUserCredentials(new UserCredentials(_settings.UserName, _settings.Password));
             using (var conn = EventStoreConnection.Create(eventStoreSettings, new IPEndPoint(IPAddress.Loopback, 1113)))
             {
-                var streamSlice = await conn.ReadStreamEventsForwardAsync(_settings.StreamName, parameters.Position, _settings.NumberOfEventsPerFetch, true);
+                var streamSlice = await conn.ReadStreamEventsForwardAsync(_settings.StreamName, _position, _settings.NumberOfEventsPerFetch, true);
                 var events =
                     streamSlice
                     .Events
-                    .Select(_ => GetEventWrapperFromEventStoreEvent(_));
+                    .Select(GetEventWrapperFromEventStoreEvent);
 
                 return new EventStreamSlice(events, streamSlice.LastEventNumber);
             }
@@ -39,14 +38,5 @@ namespace NVenter.Core.EventStore
             var metaData = JsonConvert.DeserializeObject<Metadata>(Encoding.ASCII.GetString(resolvedEvent.Event.Metadata));
             return new EventWrapper(@event, metaData);
         }
-    }
-
-    public class EventStoreReadForwardEventStream : IEventStoreEventStreamParameters
-    {
-        public EventStoreReadForwardEventStream(long position)
-        {
-            Position = position;
-        }
-        public long Position { get; }
     }
 }

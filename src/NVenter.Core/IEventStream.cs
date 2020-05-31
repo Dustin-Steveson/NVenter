@@ -3,8 +3,10 @@ using System.Threading.Tasks;
 
 namespace NVenter.Core
 {
-    public interface IEventStream<TStreamParameters>
-    {
-        Task<EventStreamSlice> GetEvents(TStreamParameters parameters);
+    public interface IEventStreamReader<TEventStream> {
+        Task<EventStreamSlice> ReadStreamForward(long position, TEventStream eventStream);
+    }
+    public interface IEventStream {
+        Task<EventStreamSlice> GetEvents();
     }
 }

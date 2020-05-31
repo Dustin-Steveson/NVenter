@@ -9,27 +9,20 @@ using System.Threading.Tasks;
 
 namespace NVenter.Projections
 {
-    public class EventProjector<TEventStreamParameters>
-    {
-        private readonly string _streamName;
-        private readonly IEventStream<TEventStreamParameters> _eventStream;
-        private readonly TEventStreamParameters _parameters;
+    public class EventProjector {
+        private readonly IPositionalStreamFactory _streamFactory;
         private readonly IGetProjectionPosition _projectionPositionGetter;
         private readonly Func<Type, IHandleMessages> _handlerResolver;
         private readonly Func<IEnumerable<IHandleMessages>> _allHandlersResolver;
         private readonly IDictionary<Type, Func<EventWrapper, Task>> _processEventDelegateCache;
 
         public EventProjector(
-            string streamName,
-            IEventStream<TEventStreamParameters> eventStream,
-            TEventStreamParameters parameters,
+            IPositionalStreamFactory streamFactory,
             IGetProjectionPosition projectionPositionGetter,
             Func<Type, IHandleMessages> handlerResolver,
             Func<IEnumerable<IHandleMessages>> allHandlersResolver)
         {
-            _streamName = streamName;
-            _eventStream = eventStream;
-            _parameters = parameters;
+            _streamFactory = streamFactory;
             _projectionPositionGetter = projectionPositionGetter;
             _handlerResolver = handlerResolver;
             _allHandlersResolver = allHandlersResolver;
@@ -48,10 +41,9 @@ namespace NVenter.Projections
             }
 
             var position = _projectionPositionGetter.GetProjectionPosition();
-
-            while (cancellationToken.IsCancellationRequested == false)
-            {
-                var eventStreamSlice = await _eventStream.GetEvents(_parameters);
+            while (cancellationToken.IsCancellationRequested == false) {
+                var eventStream = _streamFactory.MakeStream(position);
+                var eventStreamSlice = await eventStream.GetEvents();
 
                 foreach (var eventWrapper in eventStreamSlice.Events)
                 {
@@ -67,7 +59,7 @@ namespace NVenter.Projections
         private Func<EventWrapper, Task> GetProcessEventDelegate(Type type)
         {
             var methodInfo = GetType()
-                .GetMethod(nameof(EventProjector<object>.ProcessEvent), BindingFlags.Instance | BindingFlags.NonPublic)
+                .GetMethod(nameof(ProcessEvent), BindingFlags.Instance | BindingFlags.NonPublic)
                 .MakeGenericMethod(type);
 
             var instanceParameter = Expression.Constant(this);
