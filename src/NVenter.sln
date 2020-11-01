@@ -29,7 +29,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NVenter.Sqlite.Domain", "NV
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Example", "Example", "{3AF38340-DBA4-4DD9-8C8A-545BD8247ACB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NVenter.Example.Projector", "Example\NVenter.Example.Projector\NVenter.Example.Projector.csproj", "{43EE1A74-943D-444E-91E8-5B2C18E6BD00}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NVenter.Example.Projector", "Example\NVenter.Example.Projector\NVenter.Example.Projector.csproj", "{43EE1A74-943D-444E-91E8-5B2C18E6BD00}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NVenter.Sqlite.Projections", "NVenter.Sqlite\NVenter.Sqlite.Projections\NVenter.Sqlite.Projections.csproj", "{2A5190C7-AC49-44D6-9646-D70C1BDC89C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,6 +79,10 @@ Global
 		{43EE1A74-943D-444E-91E8-5B2C18E6BD00}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43EE1A74-943D-444E-91E8-5B2C18E6BD00}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43EE1A74-943D-444E-91E8-5B2C18E6BD00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A5190C7-AC49-44D6-9646-D70C1BDC89C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A5190C7-AC49-44D6-9646-D70C1BDC89C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A5190C7-AC49-44D6-9646-D70C1BDC89C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A5190C7-AC49-44D6-9646-D70C1BDC89C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -89,6 +95,7 @@ Global
 		{D5F5B0F6-8BC1-468D-A8F0-2AAE80D947ED} = {5453BDE1-8FDF-42BF-B892-AEE68EC7970F}
 		{E5CDB231-4030-40D8-8E2E-504621D172A9} = {A16D4847-284C-438F-95BC-3D8DC62D6742}
 		{43EE1A74-943D-444E-91E8-5B2C18E6BD00} = {3AF38340-DBA4-4DD9-8C8A-545BD8247ACB}
+		{2A5190C7-AC49-44D6-9646-D70C1BDC89C9} = {A16D4847-284C-438F-95BC-3D8DC62D6742}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {378A2DE0-0606-48B0-B4F5-7D9E910CA7B1}

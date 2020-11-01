@@ -2,7 +2,6 @@
 using Microsoft.Data.Sqlite;
 using Newtonsoft.Json;
 using NVenter.Core;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,29 +11,26 @@ using System.Threading.Tasks;
 
 namespace NVenter.Sqlite.Core {
     public abstract class EventStream : IEventStream<IDictionary<string, object>> {
-        private readonly ReadForwardEventStreamSettings _settings;
+        private readonly EventStreamSettings _settings;
         private readonly ConnectionFactory _connectionFactory;
 
-        public EventStream(ReadForwardEventStreamSettings settings, ConnectionFactory connectionFactory) {
+        public EventStream(EventStreamSettings settings, ConnectionFactory connectionFactory) {
             _settings = settings;
             _connectionFactory = connectionFactory;
         }
 
         public async Task<EventStreamSlice> GetEvents(IDictionary<string, object> parameters) {
-            string sql = @"SELECT * 
-FROM EVENTS 
-WHERE EventType in (@events) AND
-      GlobalPosition > @GlobalPosition
-ORDER BY GlobalPosition";
 
             using (var con = _connectionFactory.NewConnection()) {
                 await con.OpenAsync();
 
                 var paramys = new DynamicParameters();
 
-                foreach (var pair in (IDictionary<string, object>)parameters) paramys.Add(pair.Key, pair.Value);
+                foreach (var pair in parameters) paramys.Add(pair.Key, pair.Value);
 
-                var results = await con.QueryAsync<StoredEvent>(_settings.Sql, paramys);
+                foreach (var pair in StreamSpecificParameters) paramys.Add(pair.Key, pair.Value);
+
+                var results = await con.QueryAsync<StoredEvent>(Sql, paramys);
 
                 var lastPosition = results.Any() ? results.Max(_ => _.GlobalPosition) : 0;
 
@@ -42,13 +38,9 @@ ORDER BY GlobalPosition";
                 return new EventStreamSlice(eventWrappers, lastPosition);
             }
         }
-    }
 
-    public class SqliteEventStreamSettings {
-        public string Sql { get; set; }
-    }
+        public abstract IDictionary<string, object> StreamSpecificParameters { get; }
 
-    public class ReadForwardEventStreamSettings : SqliteEventStreamSettings {
-        public IEnumerable<Type> TypesToStream { get; set; }
+        public abstract string Sql { get; }
     }
 }

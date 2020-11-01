@@ -1,8 +1,5 @@
 ﻿using Dapper;
 using Microsoft.Data.Sqlite;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace NVenter.Sqlite.Core {
@@ -15,7 +12,7 @@ namespace NVenter.Sqlite.Core {
 
         public async Task InitializeDatabase() {
             var createTableSql =
-    @"CREATE TABLE event(
+    @"CREATE TABLE IF NOT EXISTS event(
         Id TEXT NOT NULL,
         StreamName TEXT NOT NULL,
         EventType TEXT NOT NULL,
@@ -26,8 +23,8 @@ namespace NVenter.Sqlite.Core {
         Created DATETIME NOT NULL,
 
         UNIQUE(StreamName, StreamPosition));
-    CREATE INDEX idx_EventType ON event(StreamName);
-    CREATE INDEX idx_StreamName ON event(StreamName);";
+    CREATE INDEX IF NOT EXISTS idx_EventType ON event(StreamName);
+    CREATE INDEX IF NOT EXISTS idx_StreamName ON event(StreamName);";
 
             using (var connection = _factory.NewConnection()) {
                 connection.Open();

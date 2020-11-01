@@ -9,27 +9,23 @@ using System.Threading.Tasks;
 
 namespace NVenter.Projections
 {
-    public class EventProjector<TEventStreamParameters>
+    public class EventProjector
     {
         private readonly string _streamName;
-        private readonly IEventStream<TEventStreamParameters> _eventStream;
-        private readonly TEventStreamParameters _parameters;
+        private readonly IEventStream<long> _eventStream;
         private readonly IGetProjectionPosition _projectionPositionGetter;
         private readonly Func<Type, IHandleMessages> _handlerResolver;
         private readonly Func<IEnumerable<IHandleMessages>> _allHandlersResolver;
+        private readonly IGetPositionalParameters<long> _getPositionalParametersFactory;
         private readonly IDictionary<Type, Func<EventWrapper, Task>> _processEventDelegateCache;
 
         public EventProjector(
-            string streamName,
-            IEventStream<TEventStreamParameters> eventStream,
-            TEventStreamParameters parameters,
+            IEventStream<long> eventStream,
             IGetProjectionPosition projectionPositionGetter,
             Func<Type, IHandleMessages> handlerResolver,
             Func<IEnumerable<IHandleMessages>> allHandlersResolver)
         {
-            _streamName = streamName;
             _eventStream = eventStream;
-            _parameters = parameters;
             _projectionPositionGetter = projectionPositionGetter;
             _handlerResolver = handlerResolver;
             _allHandlersResolver = allHandlersResolver;
@@ -38,7 +34,6 @@ namespace NVenter.Projections
 
         public async Task Start(CancellationToken cancellationToken)
         {
-
             var handlers = _allHandlersResolver();
             var types = handlers.Select(h => h.GetType().GenericTypeArguments.Single());
 
@@ -51,7 +46,7 @@ namespace NVenter.Projections
 
             while (cancellationToken.IsCancellationRequested == false)
             {
-                var eventStreamSlice = await _eventStream.GetEvents(_parameters);
+                var eventStreamSlice = await _eventStream.GetEvents(position);
 
                 foreach (var eventWrapper in eventStreamSlice.Events)
                 {
@@ -91,5 +86,9 @@ namespace NVenter.Projections
             var eventWrapper = @event as EventWrapper<TEvent>;
             await handler.Handle(eventWrapper.Event, new MessageContext(eventWrapper.Metadata.Id, eventWrapper.Metadata.CausationId, eventWrapper.Metadata.CorrelationId, eventWrapper.Metadata.Created));
         }
+    }
+
+    public interface IGetPositionalParameters<TStreamParameter> {
+        TStreamParameter GetPositionalStreamParameter(long position);
     }
 }

@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace NVenter.Domain {
 
-    public class AggregateRootRepository<TStreamParams, TAggregateRoot> : IAggregateRootRepository<TAggregateRoot> where TStreamParams : IDictionary<string, object> where TAggregateRoot : AggregateRoot, new()
+    public class AggregateRootRepository<TAggregateRoot> : IAggregateRootRepository<TAggregateRoot> where TAggregateRoot : AggregateRoot, new()
     {
-        private readonly IEventStream<TStreamParams> _eventStream;
-        private readonly IAggregateRootEventStreamParametersFactory<TStreamParams, TAggregateRoot> _eventStreamParametersFactory;
+        private readonly IEventStream<string> _eventStream;
+        private readonly IAggregateRootEventStreamParametersFactory<string, TAggregateRoot> _eventStreamParametersFactory;
         private readonly IEventWriter _eventWriter;
         private readonly IBuildAggregateStreamNames _aggregateRootNameBuilder;
 

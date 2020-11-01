@@ -2,8 +2,10 @@
 using Newtonsoft.Json.Bson;
 using NVenter.Core;
 using NVenter.Domain;
+using NVenter.Projections;
 using NVenter.Sqlite.Core;
 using NVenter.Sqlite.Domain;
+using NVenter.Sqlite.Projections;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
@@ -17,20 +19,13 @@ namespace Nventer.Sqlite.Example {
             var connectionFactory = new ConnectionFactory("Data Source=test.db");
 
 
-            //var initializer = new DatabaseInitializer(connectionFactory);
-            //await initializer.InitializeDatabase();
-
-            var sql = @"
-SELECT * 
-FROM event 
-WHERE StreamName = @StreamName
-ORDER BY StreamPosition";
+            var initializer = new DatabaseInitializer(connectionFactory);
+            await initializer.InitializeDatabase();
 
             await connectionFactory.NewConnection().QueryAsync<int>("select count(*) from event");
+
             var repository = new AggregateRootRepository<IDictionary<string, object>, ShoppingCart>(
-                new AggregateRootEventStream<ShoppingCart>(
-                    new ReadForwardEventStreamSettings { Sql = sql },
-                    connectionFactory),
+                new AggregateRootEventStream<ShoppingCart>(new AggregateRootEventTypeFetcher(), connectionFactory),
                 new AggregateRootEventStreamSqlParametersFactory<ShoppingCart>(),
                 new EventWriter(connectionFactory),
                 new DefaultAggregateRootStreamNameBuilder());
@@ -48,6 +43,16 @@ ORDER BY StreamPosition";
                     AggregateId = Guid.NewGuid() 
                 }, 
                 new MessageContext(commandId, commandId, commandId, DateTimeOffset.UtcNow));
+
+            var projector = new EventProjector(new EventSpecificEventStream(new EventStreamSettings { TypesToStream = new[] { typeof(ItemAdded) } }, connectionFactory), new BullshitPositionGetter(), )
+        }
+    }
+
+
+
+    public class BullshitPositionGetter : IGetProjectionPosition {
+        public long GetProjectionPosition() {
+            return 0;
         }
     }
 

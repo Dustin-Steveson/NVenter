@@ -13,8 +13,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\NVenter.Core\NVenter.Core.csproj" />
     <ProjectReference Include="..\..\..\NVenter.Domain\NVenter.Domain.csproj" />
+    <ProjectReference Include="..\..\..\NVenter.Projections\NVenter.Projections.csproj" />
     <ProjectReference Include="..\..\NVenter.Sqlite.Core\NVenter.Sqlite.Core.csproj" />
     <ProjectReference Include="..\..\NVenter.Sqlite.Domain\NVenter.Sqlite.Domain.csproj" />
+    <ProjectReference Include="..\..\NVenter.Sqlite.Projections\NVenter.Sqlite.Projections.csproj" />
   </ItemGroup>
 
 </Project>
