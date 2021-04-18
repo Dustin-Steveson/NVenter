@@ -1,4 +1,4 @@
-﻿namespace NVenter.Core
+﻿namespace NVenter
 {
     public class IEvent { }
 }

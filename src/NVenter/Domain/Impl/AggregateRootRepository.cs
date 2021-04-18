@@ -1,4 +1,4 @@
-﻿using NVenter.Core;
+﻿using NVenter;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,11 +9,13 @@ namespace NVenter.Domain
     {
         private readonly IReadEvents _eventReader;
         private readonly IWriteEvents _eventWriter;
+        private readonly IApplyEventsToAggregates _eventApplicator;
 
-        public AggregateRootRepository(IReadEvents eventReader, IWriteEvents eventWriter)
+        public AggregateRootRepository(IReadEvents eventReader, IWriteEvents eventWriter, IApplyEventsToAggregates eventApplicator)
         {
             _eventReader = eventReader;
             _eventWriter = eventWriter;
+            _eventApplicator = eventApplicator;
         }
 
         public async Task<TAggregate> Get<TAggregate>(Guid id)
@@ -26,10 +28,7 @@ namespace NVenter.Domain
 
             var aggregate = new TAggregate();
 
-            foreach (var @event in events)
-            {
-                aggregate.Apply(@event);
-            }
+            _eventApplicator.ApplyEvents(aggregate, events);
 
             return aggregate;
         }

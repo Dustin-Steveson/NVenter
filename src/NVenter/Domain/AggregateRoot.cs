@@ -1,5 +1,4 @@
-﻿using NVenter.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace NVenter.Domain
@@ -11,15 +10,9 @@ namespace NVenter.Domain
         private List<IEvent> _uncommittedEvents = new List<IEvent>();
         public IReadOnlyList<IEvent> UncommittedChanges() => _uncommittedEvents;
 
-        protected void Raise<TEvent>(TEvent @event) where TEvent : IEvent
+        protected void AddEvents(IEnumerable<IEvent> events)
         {
-            _uncommittedEvents.Add(@event);
-        }
-
-        public virtual void ApplyChanges(IApplyEventsToAggregates eventApplicator)
-        {
-            eventApplicator.ApplyEvents(this, _uncommittedEvents);
-            _uncommittedEvents.Clear();
+            _uncommittedEvents.AddRange(events);
         }
     }
 }
